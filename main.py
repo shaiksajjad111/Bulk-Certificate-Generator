@@ -2,7 +2,7 @@
 from pathlib import Path
 
 from fastapi import FastAPI, BackgroundTasks, Depends, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, HTMLResponse
 from sqlalchemy.orm import Session
 
 from database import Base, engine, SessionLocal, get_db
@@ -21,12 +21,10 @@ app = FastAPI(
 )
 
 
-@app.get("/")
+@app.get("/", response_class=HTMLResponse)
 def home():
-    return {
-        "message": "Bulk Certificate Generator API is running",
-        "docs": "/docs",
-    }
+    html_path = Path(__file__).resolve().parent / "index.html"
+    return html_path.read_text(encoding="utf-8")
 
 
 def process_job(job_id: int):

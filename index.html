@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CertiFlow | Bulk Certificate Generator</title>
+<style>
+:root{--navy:#17243a;--blue:#3569e8;--bg:#f4f7fb;--muted:#748197;--line:#e5eaf2;--green:#14845b}
+*{box-sizing:border-box}
+body{margin:0;font-family:Inter,"Segoe UI",Arial,sans-serif;background:var(--bg);color:#202c40}
+button,input{font:inherit}
+button{cursor:pointer}
+.layout{display:flex;min-height:100vh}
+aside{width:235px;background:var(--navy);color:white;padding:26px 17px;flex-shrink:0}
+.brand{display:flex;align-items:center;gap:11px;font-size:20px;font-weight:750;margin-bottom:48px}
+.logo{background:#3972f4;border-radius:10px;padding:10px;font-size:20px}
+.navlabel{color:#93a3bd;font-size:11px;letter-spacing:1.5px;margin:20px 10px 12px}
+.navitem{padding:13px 12px;border-radius:9px;color:#cbd5e5;font-size:14px;margin:5px 0}
+.navitem.active{background:#2d3e59;color:white}
+.asidebottom{margin-top:45px;padding:15px 10px;border-top:1px solid #34445c;color:#aebbd0;font-size:12px;line-height:1.8}
+main{flex:1;min-width:0;padding:30px 4.5%;max-width:1500px;margin:auto}
+.topbar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:34px}
+.eyebrow{color:var(--muted);font-size:12px;letter-spacing:1.4px;font-weight:700}
+h1{font-size:29px;letter-spacing:-.8px;margin:9px 0}
+.subtitle{color:var(--muted);font-size:14px;line-height:1.6}
+.online{background:#e5f7ee;color:var(--green);padding:9px 13px;border-radius:30px;font-size:12px;font-weight:700;white-space:nowrap}
+.dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#19a56b;margin-right:7px}
+.stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin-bottom:23px}
+.stat,.panel{background:white;border:1px solid var(--line);border-radius:14px}
+.stat{padding:20px}
+.statlabel{font-size:13px;color:var(--muted)}
+.statvalue{font-size:29px;font-weight:750;margin-top:12px}
+.statnote{font-size:12px;color:var(--muted);margin-top:6px}
+.content{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(250px,.8fr);gap:20px;align-items:start}
+.panel{padding:24px;margin-bottom:20px;box-shadow:0 3px 12px #24365405}
+.panelhead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:8px}
+h2{font-size:17px;margin:0}
+.small{font-size:12px;color:var(--muted);line-height:1.6}
+.badge{background:#edf3ff;color:#315ed0;border-radius:6px;padding:6px 9px;font-size:11px;font-weight:700}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:22px}
+label{display:block;font-size:12px;font-weight:650;margin-bottom:7px;color:#43516a}
+input{width:100%;border:1px solid #dce3ee;border-radius:8px;padding:11px 12px;outline:none;background:#fff;color:#202c40}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px #3569e818}
+.recipient{display:grid;grid-template-columns:1fr 1fr 1fr 32px;gap:8px;margin:13px 0;align-items:center}
+.recipient input{min-width:0;font-size:12px;padding:11px 8px}
+.remove{border:1px solid var(--line);background:white;border-radius:7px;height:36px;color:#8c5260}
+.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.btn{border:0;border-radius:8px;padding:12px 16px;font-weight:650;font-size:13px}
+.primary{background:var(--blue);color:white}
+.primary:hover{background:#2856cb}
+.secondary{background:white;color:#34435b;border:1px solid var(--line)}
+button:disabled{opacity:.6;cursor:wait}
+.full{width:100%;margin-top:16px}
+.notice{display:none;border-radius:9px;padding:12px;font-size:13px;margin-top:15px;line-height:1.6}
+.notice.show{display:block}
+.notice.error{background:#fff0f0;color:#b42335}
+.notice.success{background:#eaf8f0;color:#126b4a}
+.progress{height:8px;background:#edf0f5;border-radius:10px;overflow:hidden;margin:15px 0}
+.bar{height:100%;width:0;background:var(--blue);transition:width .3s}
+.resultrow{border-top:1px solid var(--line);padding:14px 0;display:flex;justify-content:space-between;gap:10px;align-items:center}
+.resultrow:first-child{border-top:0}
+.resultname{font-size:13px;font-weight:700}
+.resultmeta{font-size:11px;color:var(--muted);margin-top:5px}
+.download{color:#2f60d8;text-decoration:none;font-size:12px;font-weight:700;white-space:nowrap}
+.status{font-size:11px;font-weight:700;margin-top:6px}
+.status.COMPLETED{color:var(--green)}.status.FAILED{color:#c23745}
+.tips{background:#f0f5ff;border:1px solid #e0eaff;border-radius:10px;padding:15px;font-size:12px;color:#455c83;line-height:1.8}
+.footer{font-size:11px;color:#8a96a8;text-align:center;padding:10px}
+a.api{color:#c4d5ff;text-decoration:none}
+@media(max-width:950px){.content{grid-template-columns:1fr}main{padding:24px}.stats{gap:10px}.stat{padding:15px}}
+@media(max-width:600px){aside{width:64px;padding:18px 8px}.brand{font-size:0;justify-content:center;margin-bottom:35px}.logo{font-size:18px}.navlabel,.navtext,.asidebottom{display:none}.navitem{text-align:center;font-size:0;padding:14px 4px}.navitem:before{content:"•";font-size:22px}.topbar{align-items:flex-start}.online{font-size:10px;padding:8px}.stats{gap:7px}.stat{padding:12px}.statvalue{font-size:23px}.statlabel{font-size:11px}.fields{grid-template-columns:1fr}.panel{padding:17px}.recipient{grid-template-columns:1fr 1fr 30px}.recipient input:nth-child(3){grid-column:1/3}.remove{grid-column:3;grid-row:1}.recipient input:nth-child(2){grid-column:2}.recipient input:nth-child(3){grid-row:2}}
+</style>
+</head>
+<body>
+<div class="layout">
+<aside>
+  <div class="brand"><span class="logo">✓</span><span>CertiFlow</span></div>
+  <div class="navlabel">WORKSPACE</div>
+  <div class="navitem active">▦ &nbsp; <span class="navtext">Dashboard</span></div>
+  <div class="navitem">▤ &nbsp; <span class="navtext">Certificates</span></div>
+  <div class="navlabel">DEVELOPER</div>
+  <div class="navitem"><a class="api" href="/docs">⌘ &nbsp; API Documentation ↗</a></div>
+  <div class="asidebottom">Bulk Certificate Generator<br>Version 1.0.0<br>Powered by FastAPI</div>
+</aside>
+
+<main>
+  <div class="topbar">
+    <div><div class="eyebrow">WORKSPACE / OVERVIEW</div><h1>Certificate Dashboard</h1><div class="subtitle">Generate, track and retrieve certificates from one place.</div></div>
+    <div class="online"><span class="dot"></span>API Connected</div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="statlabel">Recipients in current job</div><div class="statvalue" id="totalStat">—</div><div class="statnote">Total submitted</div></div>
+    <div class="stat"><div class="statlabel">Successfully generated</div><div class="statvalue" id="successStat" style="color:#14845b">—</div><div class="statnote">PDF certificates ready</div></div>
+    <div class="stat"><div class="statlabel">Failed generations</div><div class="statvalue" id="failedStat" style="color:#c23745">—</div><div class="statnote">Requires attention</div></div>
+  </div>
+
+  <div class="content">
+    <div>
+      <section class="panel">
+        <div class="panelhead"><h2>Create certificates</h2><span class="badge">BULK GENERATION</span></div>
+        <div class="small">Enter the recipient details below. Submit multiple recipients in one request.</div>
+        <div class="fields">
+          <div><label for="course">COURSE / EVENT NAME</label><input id="course" maxlength="150" placeholder="e.g. Python Programming" value="Python Basics"></div>
+          <div><label for="issuer">CERTIFICATE TEMPLATE</label><input id="issuer" value="Standard completion certificate" disabled></div>
+        </div>
+        <div style="margin-top:25px;display:flex;justify-content:space-between;align-items:center;gap:10px"><h2 style="font-size:14px">Recipients</h2><span class="badge" id="countBadge">1 recipient</span></div>
+        <div id="recipients"></div>
+        <div class="actions">
+          <button class="btn secondary" id="addBtn" type="button">+ Add recipient</button>
+          <button class="btn secondary" id="sampleBtn" type="button">Load sample</button>
+        </div>
+        <button class="btn primary full" id="generateBtn" type="button">Generate certificates →</button>
+        <div id="message" class="notice"></div>
+      </section>
+
+      <section class="panel" id="jobPanel" style="display:none">
+        <div class="panelhead"><h2>Generation progress</h2><span class="badge" id="jobBadge">JOB</span></div>
+        <div class="small" id="jobText">Preparing your request...</div>
+        <div class="progress"><div class="bar" id="progressBar"></div></div>
+        <div class="small" id="progressText">0% complete</div>
+        <div id="results" style="margin-top:15px"></div>
+      </section>
+    </div>
+
+    <div>
+      <section class="panel">
+        <h2>How it works</h2>
+        <div style="margin-top:22px">
+          <div class="resultrow"><div><div class="resultname">01 &nbsp; Submit recipients</div><div class="resultmeta">One request for the whole batch</div></div><span>↗</span></div>
+          <div class="resultrow"><div><div class="resultname">02 &nbsp; Process certificates</div><div class="resultmeta">Each recipient is processed independently</div></div><span>⚙</span></div>
+          <div class="resultrow"><div><div class="resultname">03 &nbsp; Track results</div><div class="resultmeta">View job status and failures</div></div><span>◷</span></div>
+          <div class="resultrow"><div><div class="resultname">04 &nbsp; Download PDFs</div><div class="resultmeta">Retrieve completed certificates</div></div><span>↓</span></div>
+        </div>
+      </section>
+      <section class="panel">
+        <h2>Request limits</h2>
+        <div class="resultrow"><span class="small">Recipients per request</span><strong style="font-size:13px">Up to 500</strong></div>
+        <div class="resultrow"><span class="small">Output format</span><strong style="font-size:13px">PDF</strong></div>
+        <div class="resultrow"><span class="small">Processing</span><strong style="font-size:13px">Background</strong></div>
+        <div class="resultrow"><span class="small">Input validation</span><strong style="font-size:13px;color:#14845b">Enabled</strong></div>
+      </section>
+      <div class="tips">Tip: use a valid email address for every recipient. If one certificate fails, the application continues processing the other recipients.</div>
+    </div>
+  </div>
+  <div class="footer">CertiFlow · Bulk Certificate Generator · Built with Python, FastAPI, SQLAlchemy and ReportLab</div>
+</main>
+</div>
+
+<script>
+const $=id=>document.getElementById(id);
+let latestJob=null, pollTimer=null;
+function addRecipient(name="",email="",course=""){
+  if($("recipients").children.length>=500){showMessage("A maximum of 500 recipients is allowed.","error");return}
+  const row=document.createElement("div");row.className="recipient";
+  row.innerHTML='<input aria-label="Recipient name" placeholder="Full name" maxlength="100" required><input aria-label="Recipient email" type="email" placeholder="email@example.com" required><input aria-label="Course" placeholder="Course name" maxlength="150" required><button class="remove" type="button" title="Remove recipient">×</button>';
+  const fields=row.querySelectorAll("input");fields[0].value=name;fields[1].value=email;fields[2].value=course||$("course").value;
+  row.querySelector("button").onclick=()=>{if($("recipients").children.length>1)row.remove();updateCount()};
+  $("recipients").appendChild(row);updateCount();
+}
+function updateCount(){$("countBadge").textContent=$("recipients").children.length+" recipient"+($("recipients").children.length===1?"":"s")}
+function showMessage(msg,type){$("message").textContent=msg;$("message").className="notice show "+type}
+$("addBtn").onclick=()=>addRecipient();
+$("sampleBtn").onclick=()=>{ $("recipients").innerHTML="";addRecipient("Rahul Sharma","rahul@example.com");addRecipient("Priya Kumar","priya@example.com");showMessage("Sample recipients loaded. You can edit them before submitting.","success")};
+addRecipient("Rahul Sharma","rahul@example.com");
+$("generateBtn").onclick=async()=>{
+  if(pollTimer)clearTimeout(pollTimer);
+  const recipients=[...$("recipients").querySelectorAll(".recipient")].map(row=>{const i=row.querySelectorAll("input");return{name:i[0].value.trim(),email:i[1].value.trim(),course:i[2].value.trim()}});
+  const course=$("course").value.trim();
+  if(!course){showMessage("Please enter a course or event name.","error");return}
+  if(recipients.some(r=>!r.name||!r.email||!r.course)){showMessage("Complete all name, email and course fields before submitting.","error");return}
+  $("generateBtn").disabled=true;$("generateBtn").textContent="Submitting request...";
+  try{
+    const res=await fetch("/api/jobs",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({recipients})});
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.detail?JSON.stringify(data.detail):"Request failed ("+res.status+")");
+    latestJob=data.job_id;
+    $("jobPanel").style.display="block";$("jobBadge").textContent="JOB #"+latestJob;
+    $("jobText").textContent="Your request has been accepted. Waiting for processing...";
+    $("results").innerHTML="";showMessage("Job #"+latestJob+" submitted successfully.","success");
+    $("jobPanel").scrollIntoView({behavior:"smooth",block:"start"});
+    pollJob();
+  }catch(e){showMessage("Could not submit: "+e.message,"error")}
+  finally{$("generateBtn").disabled=false;$("generateBtn").textContent="Generate certificates →"}
+};
+async function pollJob(){
+  try{
+    const res=await fetch("/api/jobs/"+latestJob);const j=await res.json();
+    if(!res.ok)throw new Error(j.detail||"Could not retrieve job status");
+    $("totalStat").textContent=j.total;$("successStat").textContent=j.successful;$("failedStat").textContent=j.failed;
+    $("jobBadge").textContent="JOB #"+latestJob+" · "+j.status;
+    $("jobText").textContent=j.status==="COMPLETED"?"All certificates generated successfully.":j.status==="COMPLETED_WITH_ERRORS"?"Job finished with some errors.":j.status==="FAILED"?"Job failed. Check the result details below.":"Processing recipients...";
+    $("progressBar").style.width=j.progress_percent+"%";$("progressText").textContent=j.progress_percent+"% complete · "+j.successful+" successful · "+j.failed+" failed · "+j.pending+" pending";
+    if(["COMPLETED","COMPLETED_WITH_ERRORS","FAILED"].includes(j.status)){await loadRecipients();return}
+    pollTimer=setTimeout(pollJob,1500);
+  }catch(e){$("jobText").textContent="Unable to refresh status: "+e.message;pollTimer=setTimeout(pollJob,3000)}
+}
+async function loadRecipients(){
+  try{
+    const res=await fetch("/api/jobs/"+latestJob+"/recipients");const data=await res.json();
+    $("results").innerHTML="";
+    data.recipients.forEach(r=>{
+      const row=document.createElement("div");row.className="resultrow";
+      const info=document.createElement("div");const name=document.createElement("div");name.className="resultname";name.textContent=r.name;
+      const meta=document.createElement("div");meta.className="resultmeta";meta.textContent=r.email+" · "+r.course;
+      const status=document.createElement("div");status.className="status "+r.status;status.textContent=r.status==="COMPLETED"?"✓ Certificate ready":r.status==="FAILED"?"Failed: "+(r.error||"Unknown error"):r.status;
+      info.append(name,meta,status);row.appendChild(info);
+      if(r.download_url){const a=document.createElement("a");a.className="download";a.href=r.download_url;a.textContent="↓ Download PDF";a.target="_blank";a.rel="noopener";row.appendChild(a)}
+      $("results").appendChild(row);
+    });
+    if(!data.recipients.length)$("results").textContent="No recipients found.";
+  }catch(e){$("results").textContent="Unable to load recipient results."}
+}
+</script>
+</body>
+</html>
