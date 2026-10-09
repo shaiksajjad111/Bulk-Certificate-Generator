@@ -3,6 +3,14 @@
 
 A Python backend API that generates PDF certificates for multiple recipients in one request.
 
+## Live Demo
+
+- **Web Interface:** https://bulk-certificate-generator-yse8.onrender.com/
+- **Interactive API Documentation:** https://bulk-certificate-generator-yse8.onrender.com/docs
+- **GitHub Repository:** https://github.com/shaiksajjad111/Bulk-Certificate-Generator
+
+The web interface allows users to submit certificate generation requests, monitor job progress, view recipient results, and download generated PDF certificates.
+
 ## Features
 
 - Bulk certificate generation
